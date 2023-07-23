@@ -1,6 +1,8 @@
 // The module "vscode" contains the VS Code extensibility API
 //
 // Import the module and reference it with the alias vscode.
+import * as path from "path";
+import * as fs from "fs";
 import * as vscode from "vscode";
 
 // This method is called when our extension is activated.
@@ -15,8 +17,27 @@ export const activate = (context: vscode.ExtensionContext) => {
     const disposable = vscode.commands.registerCommand("mextn.new", () => {
         // This code will run when the command is executed.
 
-        vscode.window.showInformationMessage("Hello!");
+        // vscode.window.showInformationMessage("Hello!");
+        createNewFile();
     });
 
     context.subscriptions.push(disposable);
+};
+
+const createNewFile = async () => {
+    const name = await vscode.window.showInputBox({
+        placeHolder: "Enter a name for your new Tidal file",
+    });
+    if (!name) return;
+
+    const dirUri = vscode.workspace.workspaceFolders?.at(0)?.uri;
+    if (!dirUri) return;
+
+    const fileName = `j22-${name}.tidal`;
+    const filePath = path.join(dirUri.fsPath, fileName);
+    fs.writeFileSync(filePath, "", "utf8");
+
+    const openPath = vscode.Uri.file(filePath);
+    const doc = await vscode.workspace.openTextDocument(openPath);
+    await vscode.window.showTextDocument(doc);
 };
