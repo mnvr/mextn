@@ -33,7 +33,13 @@ const createNewFile = async () => {
     const dirUri = vscode.workspace.workspaceFolders?.at(0)?.uri;
     if (!dirUri) return;
 
-    const fileName = `j22-${name}.tidal`;
+    const date = new Date();
+    const month = date.toLocaleString("en-POSIX", { month: "short" });
+    const m = month[0].toLowerCase();
+    const dayOfMonth = date.getDate();
+    const prefix = `${m}${dayOfMonth}`;
+
+    const fileName = `${prefix}-${name}.tidal`;
     const filePath = path.join(dirUri.fsPath, fileName);
     fs.writeFileSync(filePath, "", "utf8");
 
