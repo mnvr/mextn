@@ -1,0 +1,36 @@
+{
+    "name": "mextn",
+    "description": "M extensions for VS Code",
+    "version": "0.0.1",
+    "repository": "https://github.com/mnvr/mextn",
+    "author": "Manav Rathi",
+    "license": "MIT",
+    "private": true,
+    "displayName": "M extensions",
+    "publisher": "mnvr",
+    "engines": {
+        "vscode": "^1.80.0"
+    },
+    "activationEvents": [],
+    "main": "./dist/extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "mextn.new",
+                "title": "M New"
+            }
+        ]
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc",
+        "package": "npx @vscode/vsce package --yarn --out dist/mextn.vsix",
+        "install": "code --install-extension dist/mextn.vsix",
+        "dev": "yarn package && yarn install"
+    },
+    "devDependencies": {
+        "@types/node": "^20.4.4",
+        "@types/vscode": "^1.80.0",
+        "typescript": "^5.1.6"
+    }
+}
