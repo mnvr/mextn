@@ -25,8 +25,8 @@
         "vscode:prepublish": "npm run compile",
         "compile": "tsc",
         "package": "npx @vscode/vsce package --yarn --out dist/mextn.vsix",
-        "install": "code --install-extension dist/mextn.vsix",
-        "dev": "yarn package && yarn install"
+        "vsix-install": "code --install-extension dist/mextn.vsix",
+        "dev": "yarn package && yarn vsix-install"
     },
     "devDependencies": {
         "@types/node": "^20.4.4",
