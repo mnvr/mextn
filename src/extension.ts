@@ -39,7 +39,32 @@ const createNewFile = async () => {
     const dayOfMonth = date.getDate();
     const prefix = `${m}${dayOfMonth}`;
 
-    const fileName = `${prefix}-${name}.tidal`;
+    let fileExtension = "tidal";
+
+    // See if there is a default file type defined in the workspace
+    // configuration. If so, try to use that to set the extension.
+    const defaultLanguage = await vscode.workspace
+        .getConfiguration("files")
+        .get("defaultLanguage");
+    // I don't yet know how to find the extensions corresponding to a given
+    // vscode language identifier, or if it that is currently even possible.
+    //
+    // There is a way to get the list of all language ids in the language
+    // namespace, via `vscode.languages.getLanguages()`, but I didn't find a way
+    // to obtain the list of extensions associated with that language ID.
+    //
+    // So for now, hardcode the mapping to some known types.
+    const extensionForLanguageID: Record<string, string> = {
+        markdown: "md",
+    };
+    if (defaultLanguage && typeof defaultLanguage === "string") {
+        const possibleExtension = extensionForLanguageID[defaultLanguage];
+        if (possibleExtension) {
+            fileExtension = possibleExtension;
+        }
+    }
+
+    const fileName = `${prefix}-${name}.${fileExtension}`;
     const filePath = path.join(dirUri.fsPath, fileName);
     fs.writeFileSync(filePath, "", "utf8");
 
