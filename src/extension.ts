@@ -37,7 +37,8 @@ const createNewFile = async () => {
     const month = date.toLocaleString("en-POSIX", { month: "short" });
     const m = month[0].toLowerCase();
     const dayOfMonth = date.getDate();
-    const prefix = `${m}${dayOfMonth}`;
+    const day = `${dayOfMonth}`.padStart(2, "0");
+    const prefix = `${m}${day}`;
 
     let fileExtension = "tidal";
 
