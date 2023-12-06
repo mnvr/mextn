@@ -57,6 +57,7 @@ const createNewFile = async () => {
     // So for now, hardcode the mapping to some known types.
     const extensionForLanguageID: Record<string, string> = {
         markdown: "md",
+        haskell: "hs",
     };
     if (defaultLanguage && typeof defaultLanguage === "string") {
         const possibleExtension = extensionForLanguageID[defaultLanguage];
