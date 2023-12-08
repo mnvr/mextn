@@ -47,6 +47,7 @@ const createNewFile = async () => {
     const defaultLanguage = await vscode.workspace
         .getConfiguration("files")
         .get("defaultLanguage");
+
     // I don't yet know how to find the extensions corresponding to a given
     // vscode language identifier, or if it that is currently even possible.
     //
@@ -59,6 +60,7 @@ const createNewFile = async () => {
         markdown: "md",
         haskell: "hs",
     };
+
     if (defaultLanguage && typeof defaultLanguage === "string") {
         const possibleExtension = extensionForLanguageID[defaultLanguage];
         if (possibleExtension) {
@@ -68,7 +70,11 @@ const createNewFile = async () => {
 
     const fileName = `${prefix}-${name}.${fileExtension}`;
     const filePath = path.join(dirUri.fsPath, fileName);
-    fs.writeFileSync(filePath, "", "utf8");
+    if (fs.existsSync(filePath)) {
+        vscode.window.showErrorMessage(`File ${fileName} already exists`);
+        return;
+    }
+    fs.writeFileSync(filePath, "", { flag: "wx", encoding: "utf8" });
 
     const openPath = vscode.Uri.file(filePath);
     const doc = await vscode.workspace.openTextDocument(openPath);
