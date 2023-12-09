@@ -1,7 +1,17 @@
 An (unpublished) lil VSCode extension to create a new file in the current
 workspace with a name generated from a template.
 
-## Using
+I have bound it to a keybinding
+
+    {
+        "key": "cmd+m cmd+n",
+        "command": "mextn.new"
+    },
+
+so I can just use ⌘ M ⌘ N to create a new file quickly. The list of file types
+it supports can be manually modified in `src/extension.ts`.
+
+## Installing
 
 Install dependencies using
 

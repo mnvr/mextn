@@ -24,21 +24,28 @@ export const activate = (context: vscode.ExtensionContext) => {
     context.subscriptions.push(disposable);
 };
 
-const createNewFile = async () => {
-    const name = await vscode.window.showInputBox({
-        placeHolder: "Enter a name for your new Tidal file",
-    });
-    if (!name) return;
 
-    const dirUri = vscode.workspace.workspaceFolders?.at(0)?.uri;
-    if (!dirUri) return;
+const createNewFile = async () => {
+    let name = await vscode.window.showInputBox({
+        placeHolder: "Enter a name for your new file (leave blank to autogen)",
+    });
 
     const date = new Date();
     const month = date.toLocaleString("en-POSIX", { month: "short" });
     const m = month[0].toLowerCase();
     const dayOfMonth = date.getDate();
-    const day = `${dayOfMonth}`.padStart(2, "0");
+    const pad2 = (n: number | string) => `${n}`.padStart(2, "0");
+
+    const day = pad2(dayOfMonth);
     const prefix = `${m}${day}`;
+
+    if (!name) {
+        // Generate it for me Hal
+        name = pad2(date.getHours());
+    }
+
+    const dirUri = vscode.workspace.workspaceFolders?.at(0)?.uri;
+    if (!dirUri) return;
 
     let fileExtension = "tidal";
 
@@ -68,13 +75,19 @@ const createNewFile = async () => {
         }
     }
 
-    const fileName = `${prefix}-${name}.${fileExtension}`;
-    const filePath = path.join(dirUri.fsPath, fileName);
+    let fileName = `${prefix}-${name}.${fileExtension}`;
+    let filePath = path.join(dirUri.fsPath, fileName);
+    let suffix = 0;
+    while (fs.existsSync(filePath) && suffix++ < 5) {
+        fileName = `${prefix}-${name}-${suffix}.${fileExtension}`;
+        filePath = path.join(dirUri.fsPath, fileName);
+    }
+    // Give up after a while to avoid infinite loops.
     if (fs.existsSync(filePath)) {
         vscode.window.showErrorMessage(`File ${fileName} already exists`);
         return;
     }
-    fs.writeFileSync(filePath, "", { flag: "wx", encoding: "utf8" });
+    fs.writeFileSync(filePath, "", "utf8");
 
     const openPath = vscode.Uri.file(filePath);
     const doc = await vscode.workspace.openTextDocument(openPath);
