@@ -112,7 +112,7 @@ const guessedExtension = async () => {
     );
     const files = is.filter(({ stat }) => stat.isFile());
     const sorted = files.sort(
-        (a, b) => a.stat.mtime.getTime() - b.stat.mtime.getTime()
+        (a, b) => b.stat.mtime.getTime() - a.stat.mtime.getTime()
     );
 
     const latestFile = sorted[0];
