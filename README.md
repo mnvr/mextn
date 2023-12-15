@@ -8,8 +8,12 @@ I have bound it to a keybinding
         "command": "mextn.new"
     },
 
-so I can just use ⌘ M ⌘ N to create a new file quickly. The list of file types
-it supports can be manually modified in `src/extension.ts`.
+so I can just use ⌘ M ⌘ N to create a new file quickly. It'll reuse the
+extension of the most recent existing file.
+
+> There is also support for picking the file extension based on the
+> defaultLanguage in workspace settings. The list of file types it supports this
+> way can be manually modified in `src/extension.ts`.
 
 ## Installing
 

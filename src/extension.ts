@@ -24,7 +24,6 @@ export const activate = (context: vscode.ExtensionContext) => {
     context.subscriptions.push(disposable);
 };
 
-
 const createNewFile = async () => {
     let name = await vscode.window.showInputBox({
         placeHolder: "Enter a name for your new file (leave blank to autogen)",
@@ -48,6 +47,10 @@ const createNewFile = async () => {
     if (!dirUri) return;
 
     let fileExtension = "tidal";
+
+    // Start by guessing with the extension of the most recent existing file.
+    const ge = await guessedExtension();
+    if (ge) fileExtension = ge;
 
     // See if there is a default file type defined in the workspace
     // configuration. If so, try to use that to set the extension.
@@ -92,4 +95,29 @@ const createNewFile = async () => {
     const openPath = vscode.Uri.file(filePath);
     const doc = await vscode.workspace.openTextDocument(openPath);
     await vscode.window.showTextDocument(doc);
+};
+
+// Find the extension of the most recent file in the current directory.
+// Don't search recursively, only in the top-most folder.
+const guessedExtension = async () => {
+    const workspaceFolder = vscode.workspace.workspaceFolders?.at(0);
+    if (!workspaceFolder) return;
+    const directory = workspaceFolder.uri.fsPath;
+    const items = await fs.promises.readdir(directory);
+    const is = await Promise.all(
+        items.map(async (e) => ({
+            name: e,
+            stat: await fs.promises.stat(path.join(directory, e)),
+        }))
+    );
+    const files = is.filter(({ stat }) => stat.isFile());
+    const sorted = files.sort(
+        (a, b) => a.stat.mtime.getTime() - b.stat.mtime.getTime()
+    );
+
+    const latestFile = sorted[0];
+    if (!latestFile) return;
+
+    // Trim the leading ".", the upstream function adds it.
+    return path.extname(latestFile.name).slice(1);
 };
