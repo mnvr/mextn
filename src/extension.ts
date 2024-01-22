@@ -26,7 +26,7 @@ export const activate = (context: vscode.ExtensionContext) => {
 
 const createNewFile = async () => {
     let name = await vscode.window.showInputBox({
-        placeHolder: "Enter a name for your new file (leave blank to autogen)",
+        placeHolder: "Enter a name for your new file (leave blank to cancel)",
     });
 
     const date = new Date();
@@ -39,8 +39,9 @@ const createNewFile = async () => {
     const prefix = `${m}${day}`;
 
     if (!name) {
-        // Generate it for me Hal
-        name = pad2(date.getHours());
+        // If the user doesn't provide a name, take it to mean that they
+        // want to cancel.
+        return;
     }
 
     const dirUri = vscode.workspace.workspaceFolders?.at(0)?.uri;
